@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Spotly",
+  "description": "Spotly is a smart location-based discovery app. Users can share their current location, and the app instantly suggests restaurants, clubs, cafés, tourist attractions, and fun spots nearby — and even amazing places farther away for travel ideas.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
