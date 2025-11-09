@@ -16,17 +16,21 @@ export interface ChatMessage {
 
 export interface GroundingChunk {
   web?: {
-    uri: string;
-    title: string;
+    // FIX: Made uri and title optional to match the type from @google/genai
+    uri?: string;
+    title?: string;
   };
   maps?: {
-    uri: string;
-    title: string;
+    // FIX: Made uri and title optional to match the type from @google/genai
+    uri?: string;
+    title?: string;
+    // FIX: Changed placeAnswerSources from an array of objects to a single object to match the type from @google/genai.
     placeAnswerSources?: {
         reviewSnippets: {
-            uri: string;
-            text: string;
+            // FIX: Made uri and text optional to align with the library's type definition.
+            uri?: string;
+            text?: string;
         }[];
-    }[]
+    }
   };
 }

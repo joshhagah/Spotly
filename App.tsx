@@ -36,8 +36,6 @@ async function decodeAudioData(
 
 // --- SVG Icons ---
 const CompassIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m8.66-13.66l-.7.7M4.04 19.96l-.7.7M21 12h-1m-16 0H3m13.66 8.66l-.7-.7m-11.22-11.22l-.7-.7" /></svg>;
-const VibeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1-1m6-3l-2-2" /></svg>;
-const DreamIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>;
 const PlanIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m-6 10v-5m6 5v-5m0 0l-6-3" /></svg>;
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
 const StarIcon: React.FC<{ filled: boolean }> = ({ filled }) => <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${filled ? 'text-yellow-400' : 'text-gray-600'}`} viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>;
@@ -52,6 +50,7 @@ const CafeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-
 const AttractionIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V4m0 16v-4m8-8h-4M4 12h4m10.485-5.515l-2.829 2.829m-8.342 8.342l-2.829 2.829M5.515 5.515l2.829 2.829m8.342 8.342l2.829 2.829" /></svg>;
 const EventIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const AdventureIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6H8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V6" /></svg>;
+const ShareIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>;
 
 
 // --- Main App Component ---
@@ -65,15 +64,6 @@ export default function App() {
   const [favorites, setFavorites] = useState<Place[]>([]);
   const [groundingChunks, setGroundingChunks] = useState<GroundingChunk[]>([]);
   const [isShowingResults, setIsShowingResults] = useState(false);
-
-  // Vibe Check state
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [vibeResult, setVibeResult] = useState('');
-
-  // Dream Spot state
-  const [dreamPrompt, setDreamPrompt] = useState('');
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
-  const [generatedImage, setGeneratedImage] = useState('');
 
   // Pro Planner state
   const [itinerary, setItinerary] = useState('');
@@ -90,62 +80,17 @@ export default function App() {
     );
   };
 
-  const handleDiscover = async (query: string) => {
+  const handleDiscover = async (query: string, location: { lat?: number; lon?: number; name?: string }) => {
     setIsLoading(true);
     setError(null);
     setPlaces([]);
     setGroundingChunks([]);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const result = await geminiService.getPlaceRecommendations(latitude, longitude, query);
-          setPlaces(result.places);
-          setGroundingChunks(result.groundingChunks);
-          setIsShowingResults(true);
-        } catch (e: any) {
-          setError(e.message);
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (geoError) => {
-        setError(`Geolocation error: ${geoError.message}`);
-        setIsLoading(false);
-      }
-    );
-  };
-
-  const handleVibeCheck = async () => {
-    if (!imageFile) {
-      setError("Please select an image file.");
-      return;
-    }
-    setIsLoading(true);
-    setError(null);
-    setVibeResult('');
     try {
-      const result = await geminiService.analyzeImageVibe(imageFile);
-      setVibeResult(result);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDreamSpot = async () => {
-    if (!dreamPrompt) {
-      setError("Please enter a prompt for your dream spot.");
-      return;
-    }
-    setIsLoading(true);
-    setError(null);
-    setGeneratedImage('');
-    try {
-      const result = await geminiService.generateDreamImage(dreamPrompt, aspectRatio);
-      setGeneratedImage(result);
+      const result = await geminiService.getPlaceRecommendations(query, location);
+      setPlaces(result.places);
+      setGroundingChunks(result.groundingChunks);
+      setIsShowingResults(true);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -174,8 +119,6 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home': return <HomePage onDiscover={handleDiscover} places={places} favorites={favorites} toggleFavorite={toggleFavorite} groundingChunks={groundingChunks} isShowingResults={isShowingResults} setIsShowingResults={setIsShowingResults}/>;
-      case 'vibe': return <VibeCheckTab imageFile={imageFile} setImageFile={setImageFile} onAnalyze={handleVibeCheck} result={vibeResult} />;
-      case 'dream': return <DreamSpotTab prompt={dreamPrompt} setPrompt={setDreamPrompt} aspectRatio={aspectRatio} setAspectRatio={setAspectRatio} onGenerate={handleDreamSpot} result={generatedImage} />;
       case 'plan': return <ProPlannerTab onPlan={handleProPlanner} result={itinerary} favoritesCount={favorites.length} />;
       default: return null;
     }
@@ -197,8 +140,6 @@ export default function App() {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-lg border-t border-t-cyan-400/20 flex justify-around p-2 shadow-t-xl">
         <NavButton icon={<CompassIcon />} label="Home" isActive={activeTab === 'home'} onClick={() => {setActiveTab('home'); setIsShowingResults(false);}} />
-        <NavButton icon={<VibeIcon />} label="Vibe Check" isActive={activeTab === 'vibe'} onClick={() => setActiveTab('vibe')} />
-        <NavButton icon={<DreamIcon />} label="Dream Spot" isActive={activeTab === 'dream'} onClick={() => setActiveTab('dream')} />
         <NavButton icon={<PlanIcon />} label="Pro Plan" isActive={activeTab === 'plan'} onClick={() => setActiveTab('plan')} />
       </nav>
     </div>
@@ -236,7 +177,7 @@ const LoadingSpinner = () => (
 );
 
 const HomePage: React.FC<{
-  onDiscover: (query: string) => void;
+  onDiscover: (query: string, location: { lat?: number; lon?: number; name?: string }) => void;
   places: Place[];
   favorites: Place[];
   toggleFavorite: (place: Place) => void;
@@ -247,18 +188,27 @@ const HomePage: React.FC<{
   const [selectedCategory, setSelectedCategory] = useState('Restaurants');
   const [customQuery, setCustomQuery] = useState('');
   const [locationStatus, setLocationStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [manualLocation, setManualLocation] = useState('');
+  const [coords, setCoords] = useState<{lat: number, lon: number} | null>(null);
 
   const handleGetLocation = () => {
     setLocationStatus('loading');
     navigator.geolocation.getCurrentPosition(
-      () => setLocationStatus('success'),
+      (position) => {
+        setCoords({ lat: position.coords.latitude, lon: position.coords.longitude });
+        setLocationStatus('success');
+      },
       () => setLocationStatus('error')
     );
   };
   
   const handleSearch = () => {
     const query = customQuery.trim() || selectedCategory;
-    onDiscover(query);
+    if (manualLocation.trim()) {
+      onDiscover(query, { name: manualLocation.trim() });
+    } else if (coords) {
+      onDiscover(query, { lat: coords.lat, lon: coords.lon });
+    }
   };
 
   const categories = [
@@ -297,11 +247,11 @@ const HomePage: React.FC<{
                 <input 
                     type="text" 
                     placeholder="Type your city or area..." 
-                    disabled 
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed" 
+                    value={manualLocation}
+                    onChange={(e) => setManualLocation(e.target.value)}
+                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-cyan-500 focus:outline-none" 
                 />
             </div>
-            <p className="text-xs text-gray-500 mt-2">Manual city input is coming soon!</p>
         </div>
 
         <div className="w-full mb-8">
@@ -329,7 +279,7 @@ const HomePage: React.FC<{
 
         <button 
             onClick={handleSearch} 
-            disabled={locationStatus !== 'success'}
+            disabled={locationStatus !== 'success' && !manualLocation.trim()}
             className="w-full max-w-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
             🔎 Find Places
@@ -384,6 +334,7 @@ const PlaceCard: React.FC<{ place: Place; isFavorite: boolean; onToggleFavorite:
   const [tip, setTip] = useState('');
   const [isTipLoading, setIsTipLoading] = useState(false);
   const [audioContext] = useState(() => new (window.AudioContext || (window as any).webkitAudioContext)());
+  const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
 
   const handlePlayTTS = async (text: string) => {
       try {
@@ -397,6 +348,30 @@ const PlaceCard: React.FC<{ place: Place; isFavorite: boolean; onToggleFavorite:
       } catch (error) {
           console.error("Error playing TTS:", error);
       }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: place.name,
+      text: `Check out ${place.name}: ${place.description}`,
+      url: place.uri || window.location.href,
+    };
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(shareData.url);
+            setShareStatus('copied');
+            setTimeout(() => setShareStatus('idle'), 2000);
+        } catch (error) {
+            console.error('Failed to copy:', error);
+            alert("Could not copy link to clipboard.");
+        }
+    }
   };
 
   const handleGetTip = async () => {
@@ -433,44 +408,15 @@ const PlaceCard: React.FC<{ place: Place; isFavorite: boolean; onToggleFavorite:
                 <button onClick={handleGetTip} className="flex-1 text-xs bg-cyan-600 hover:bg-cyan-500 text-white py-1 px-2 rounded-md" disabled={isTipLoading}>
                   {isTipLoading ? '...' : 'Quick Tip'}
                 </button>
+                <button onClick={handleShare} className="flex-1 text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-2 rounded-md flex items-center justify-center gap-1">
+                  {shareStatus === 'idle' ? <><ShareIcon /> Share</> : 'Copied!'}
+                </button>
             </div>
             {tip && <p className="text-xs bg-gray-700/50 p-2 rounded-md text-cyan-200 italic">"{tip}"</p>}
         </div>
       </div>
     </div>
   );
-};
-
-const VibeCheckTab: React.FC<{ imageFile: File | null; setImageFile: (file: File) => void; onAnalyze: () => void; result: string; }> = ({ imageFile, setImageFile, onAnalyze, result }) => {
-  const previewUrl = useMemo(() => imageFile ? URL.createObjectURL(imageFile) : null, [imageFile]);
-
-  return (
-    <div className="text-center">
-      <h2 className="text-2xl font-bold mb-4 text-cyan-400">Vibe Check</h2>
-      <p className="text-gray-400 mb-6">Upload a photo of a place to get its vibe.</p>
-      <input type="file" accept="image/*" onChange={(e) => e.target.files && setImageFile(e.target.files[0])} className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 mb-4" />
-      {previewUrl && <img src={previewUrl} alt="Preview" className="mx-auto rounded-lg max-h-60 mb-4" />}
-      <button onClick={onAnalyze} className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105" disabled={!imageFile}>Analyze Vibe</button>
-      {result && <p className="mt-6 bg-gray-700/50 p-4 rounded-lg text-left whitespace-pre-wrap">{result}</p>}
-    </div>
-  );
-};
-
-const DreamSpotTab: React.FC<{ prompt: string; setPrompt: (p: string) => void; aspectRatio: AspectRatio; setAspectRatio: (ar: AspectRatio) => void; onGenerate: () => void; result: string; }> = ({ prompt, setPrompt, aspectRatio, setAspectRatio, onGenerate, result }) => {
-    return (
-        <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4 text-purple-400">Dream Spot Generator</h2>
-            <p className="text-gray-400 mb-6">Describe your ideal place, and we'll bring it to life.</p>
-            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="e.g., a cozy cafe on a rainy day in Paris" className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:outline-none mb-4 h-24" />
-            <div className="flex justify-center gap-2 mb-4">
-                {(['1:1', '16:9', '9:16', '4:3', '3:4'] as AspectRatio[]).map(ar => (
-                    <button key={ar} onClick={() => setAspectRatio(ar)} className={`px-3 py-1 text-sm rounded-full ${aspectRatio === ar ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-300'}`}>{ar}</button>
-                ))}
-            </div>
-            <button onClick={onGenerate} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105">Generate Image</button>
-            {result && <img src={result} alt="Generated dream spot" className="mx-auto rounded-lg mt-6 shadow-lg" />}
-        </div>
-    );
 };
 
 const ProPlannerTab: React.FC<{ onPlan: () => void; result: string; favoritesCount: number; }> = ({ onPlan, result, favoritesCount }) => (
@@ -548,6 +494,7 @@ const ChatBot: React.FC<{ isChatOpen: boolean, setIsChatOpen: (isOpen: boolean) 
                             <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-xs md:max-w-md p-3 rounded-2xl ${msg.role === 'user' ? 'bg-cyan-600 rounded-br-none' : 'bg-gray-700 rounded-bl-none'}`}>
                                     <p className="text-sm" dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br />').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}></p>
+
                                 </div>
                             </div>
                         ))}

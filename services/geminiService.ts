@@ -1,33 +1,40 @@
 import { GoogleGenAI, Type, GenerateContentResponse, Chat, Modality } from "@google/genai";
 import { Place, AspectRatio, GroundingChunk } from '../types';
 
-// Utility to convert File -> base64
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve((reader.result as string).split(',')[1]);
-    reader.onerror = error => reject(error);
-  });
-};
-
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
-export const getPlaceRecommendations = async (lat: number, lon: number, query: string): Promise<{ places: Place[], groundingChunks: GroundingChunk[] }> => {
+export const getPlaceRecommendations = async (query: string, location: { lat?: number; lon?: number; name?: string }): Promise<{ places: Place[], groundingChunks: GroundingChunk[] }> => {
   try {
-    const prompt = `Find cool and interesting places near latitude ${lat} and longitude ${lon}. I'm looking for "${query}". Suggest a mix of places that fit this search. For each place, provide a name, a brief, enticing description, category (like 'Restaurant', 'Cafe', 'Park'), and a rating out of 5. Your response must be a single JSON object with a key "places" that is an array of place objects. Each place object must have keys: "name", "description", "category", and "rating". Do not add any text before or after the JSON object.`;
+    let locationString: string;
+    let toolConfig: any = undefined;
+
+    if (location.lat && location.lon) {
+        locationString = `near latitude ${location.lat} and longitude ${location.lon}`;
+        toolConfig = {
+            retrievalConfig: {
+                latLng: { latitude: location.lat, longitude: location.lon }
+            }
+        };
+    } else if (location.name) {
+        locationString = `in or near ${location.name}`;
+    } else {
+        throw new Error("Location information (either coordinates or a name) is required.");
+    }
+
+    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search. For each place, provide a name, a brief, enticing description, category (like 'Restaurant', 'Cafe', 'Park'), and a rating out of 5. Your response must be a single JSON object with a key "places" that is an array of place objects. Each place object must have keys: "name", "description", "category", and "rating". Do not add any text before or after the JSON object.`;
+
+    const config: any = {
+        tools: [{ googleMaps: {} }],
+    };
+
+    if (toolConfig) {
+        config.toolConfig = toolConfig;
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
-      config: {
-        tools: [{ googleMaps: {} }],
-      },
-      toolConfig: {
-        retrievalConfig: {
-          latLng: { latitude: lat, longitude: lon }
-        }
-      }
+      config: config,
     });
 
     const groundingChunks: GroundingChunk[] = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
@@ -41,7 +48,7 @@ export const getPlaceRecommendations = async (lat: number, lon: number, query: s
 
     // Merge grounding data into places
     const placesWithGrounding = parsed.places.map((place: Place, index: number) => {
-      const mapChunk = groundingChunks.find(c => c.maps && c.maps.title.toLowerCase().includes(place.name.toLowerCase()));
+      const mapChunk = groundingChunks.find(c => c.maps && c.maps.title && c.maps.title.toLowerCase().includes(place.name.toLowerCase()));
       if (mapChunk && mapChunk.maps) {
         return { ...place, uri: mapChunk.maps.uri, title: mapChunk.maps.title };
       }
@@ -53,34 +60,6 @@ export const getPlaceRecommendations = async (lat: number, lon: number, query: s
     console.error("Error fetching place recommendations:", error);
     throw new Error("Could not fetch recommendations. Please try again.");
   }
-};
-
-export const analyzeImageVibe = async (imageFile: File): Promise<string> => {
-  const base64Image = await fileToBase64(imageFile);
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: {
-      parts: [
-        { text: "Describe the vibe of this place. Is it good for relaxing, working, a date night, or something else? Be descriptive and engaging." },
-        { inlineData: { mimeType: imageFile.type, data: base64Image } }
-      ]
-    },
-  });
-  return response.text;
-};
-
-export const generateDreamImage = async (prompt: string, aspectRatio: AspectRatio): Promise<string> => {
-    const response = await ai.models.generateImages({
-        model: 'imagen-4.0-generate-001',
-        prompt: `An artistic, beautiful photograph of: ${prompt}`,
-        config: {
-          numberOfImages: 1,
-          outputMimeType: 'image/jpeg',
-          aspectRatio: aspectRatio,
-        },
-    });
-    const base64ImageBytes = response.generatedImages[0].image.imageBytes;
-    return `data:image/jpeg;base64,${base64ImageBytes}`;
 };
 
 export const createProItinerary = async (places: Place[]): Promise<string> => {
