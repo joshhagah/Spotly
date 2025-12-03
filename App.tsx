@@ -220,13 +220,37 @@ const HomePage: React.FC<{
   const [coords, setCoords] = useState<{lat: number, lon: number} | null>(null);
 
   const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+    }
+
     setLocationStatus('loading');
+    
+    // Explicitly requesting high accuracy can help trigger the permission prompt 
+    // if it wasn't already granted or denied, and ensures better results.
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setCoords({ lat: position.coords.latitude, lon: position.coords.longitude });
         setLocationStatus('success');
       },
-      () => setLocationStatus('error')
+      (error) => {
+        console.error("Error getting location:", error);
+        setLocationStatus('error');
+        // Handle specific error codes
+        if (error.code === error.PERMISSION_DENIED) {
+             alert("Location permission was denied. Please allow location access in your browser settings to use this feature.");
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+             alert("Location information is unavailable. Please try typing your location.");
+        } else if (error.code === error.TIMEOUT) {
+             alert("The request to get user location timed out. Please try again.");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
     );
   };
   
@@ -271,7 +295,7 @@ const HomePage: React.FC<{
                     {locationStatus === 'loading' && <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>}
                     {locationStatus === 'idle' && 'Use My Current Location'}
                     {locationStatus === 'success' && '✅ Location Ready'}
-                    {locationStatus === 'error' && '❌ Error Getting Location'}
+                    {locationStatus === 'error' && '❌ Retry Location'}
                 </button>
                 <input 
                     type="text" 
