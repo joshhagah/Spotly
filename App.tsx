@@ -385,6 +385,15 @@ const HomePage: React.FC<{
                 🔎 Find Places
             </button>
         </div>
+
+        {/* Disclaimer Section */}
+        <div className="mt-8 px-6 text-center opacity-60 hover:opacity-100 transition-opacity duration-300">
+             <p className="text-[10px] text-gray-500 font-light leading-relaxed max-w-lg mx-auto">
+                Information shown in Spotly comes from multiple public sources and partner platforms. 
+                Spotly acts as a smart bridge to help you discover places easily — but some details like menus, prices, or opening hours may change without notice. 
+                Always double-check important information directly with the place before making plans.
+            </p>
+        </div>
     </div>
   );
 };
