@@ -5,6 +5,9 @@ export interface Place {
   rating: number;
   uri?: string;
   title?: string;
+  priceLevel?: 'Low' | 'Medium' | 'High';
+  priceRange?: string;
+  popularDishes?: string[];
 }
 
 export type AspectRatio = "1:1" | "16:9" | "9:16" | "4:3" | "3:4";

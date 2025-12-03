@@ -50,7 +50,9 @@ const CafeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-
 const AttractionIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V4m0 16v-4m8-8h-4M4 12h4m10.485-5.515l-2.829 2.829m-8.342 8.342l-2.829 2.829M5.515 5.515l2.829 2.829m8.342 8.342l2.829 2.829" /></svg>;
 const EventIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const AdventureIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6H8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V6" /></svg>;
+const HotelIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m8-10h2M7 21h10M9 9h1m0 4h1m0 4h1m-5-8h1m0 4h1m0 4h1" /></svg>;
 const ShareIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>;
+const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" /></svg>;
 
 // --- Main App Component ---
 export default function App() {
@@ -244,6 +246,7 @@ const HomePage: React.FC<{
     { name: 'Attractions', icon: <AttractionIcon /> },
     { name: 'Events', icon: <EventIcon /> },
     { name: 'Adventures', icon: <AdventureIcon /> },
+    { name: 'Hotels', icon: <HotelIcon /> },
   ];
 
   if (isShowingResults) {
@@ -410,38 +413,85 @@ const PlaceCard: React.FC<{ place: Place; isFavorite: boolean; onToggleFavorite:
   };
   
   return (
-    <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-      <div className="p-5">
+    <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
+      <div className="p-5 flex-grow">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-xl font-bold text-white">{place.name}</h3>
-            <p className="text-sm text-cyan-400">{place.category}</p>
+            <h3 className="text-xl font-bold text-white leading-tight">{place.name}</h3>
+            <p className="text-sm text-cyan-400 mt-1">{place.category}</p>
           </div>
-          <button onClick={() => onToggleFavorite(place)}>
+          <button onClick={() => onToggleFavorite(place)} className="p-1">
             <HeartIcon filled={isFavorite} />
           </button>
         </div>
-        <p className="text-gray-300 mt-2 text-sm">{place.description}</p>
+        <p className="text-gray-300 mt-3 text-sm line-clamp-3">{place.description}</p>
+        
         <div className="flex items-center mt-4">
           {[...Array(5)].map((_, i) => <StarIcon key={i} filled={i < place.rating} />)}
           <span className="text-gray-400 text-xs ml-2">({place.rating.toFixed(1)})</span>
         </div>
-        {place.uri && (
-           <a href={place.uri} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-blue-400 hover:underline">View on Map</a>
+
+        {/* Menu & Prices Section */}
+        {(place.priceLevel || place.priceRange || (place.popularDishes && place.popularDishes.length > 0)) && (
+            <div className="mt-4 pt-4 border-t border-gray-700/50">
+                <div className="flex items-center gap-2 mb-2">
+                    <MenuIcon />
+                    <span className="text-sm font-semibold text-gray-200">Menu & Prices</span>
+                </div>
+                
+                {place.priceLevel && (
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-gray-400">Price Level:</span>
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                            place.priceLevel === 'Low' ? 'bg-green-500/20 text-green-400' : 
+                            place.priceLevel === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' : 
+                            'bg-red-500/20 text-red-400'
+                        }`}>
+                            {place.priceLevel}
+                        </span>
+                    </div>
+                )}
+                
+                {place.priceRange && (
+                    <p className="text-xs text-gray-300 mb-2">
+                        Est. {place.priceRange} per person
+                    </p>
+                )}
+
+                {place.popularDishes && place.popularDishes.length > 0 && (
+                    <div className="mt-2">
+                        <p className="text-xs text-gray-400 mb-1">Popular Dishes:</p>
+                        <div className="flex flex-wrap gap-1">
+                            {place.popularDishes.map((dish, idx) => (
+                                <span key={idx} className="text-xs bg-gray-700 text-cyan-200 px-2 py-1 rounded-full">
+                                    {dish}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         )}
-        <div className="mt-4 flex flex-col gap-2">
+
+        {place.uri && (
+           <a href={place.uri} target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-xs text-blue-400 hover:underline">View on Map</a>
+        )}
+      </div>
+
+      <div className="p-4 bg-gray-900/30 border-t border-gray-700/50 mt-auto">
+        <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-                <button onClick={() => handlePlayTTS(`${place.name}. ${place.description}`)} className="flex-1 text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-2 rounded-md flex items-center justify-center gap-1">
+                <button onClick={() => handlePlayTTS(`${place.name}. ${place.description}`)} className="flex-1 text-xs bg-gray-700 hover:bg-gray-600 text-white py-2 px-2 rounded-md flex items-center justify-center gap-1 transition-colors">
                     <SpeakerIcon /> Read
                 </button>
-                <button onClick={handleGetTip} className="flex-1 text-xs bg-cyan-600 hover:bg-cyan-500 text-white py-1 px-2 rounded-md" disabled={isTipLoading}>
+                <button onClick={handleGetTip} className="flex-1 text-xs bg-cyan-600 hover:bg-cyan-500 text-white py-2 px-2 rounded-md transition-colors" disabled={isTipLoading}>
                   {isTipLoading ? '...' : 'Quick Tip'}
                 </button>
-                <button onClick={handleShare} className="flex-1 text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-2 rounded-md flex items-center justify-center gap-1">
+                <button onClick={handleShare} className="flex-1 text-xs bg-gray-700 hover:bg-gray-600 text-white py-2 px-2 rounded-md flex items-center justify-center gap-1 transition-colors">
                   {shareStatus === 'idle' ? <><ShareIcon /> Share</> : 'Copied!'}
                 </button>
             </div>
-            {tip && <p className="text-xs bg-gray-700/50 p-2 rounded-md text-cyan-200 italic">"{tip}"</p>}
+            {tip && <p className="text-xs bg-gray-700/80 p-3 rounded-md text-cyan-200 italic border-l-2 border-cyan-500">"{tip}"</p>}
         </div>
       </div>
     </div>

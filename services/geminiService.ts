@@ -21,7 +21,18 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
         throw new Error("Location information (either coordinates or a name) is required.");
     }
 
-    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search. For each place, provide a name, a brief, enticing description, category (like 'Restaurant', 'Cafe', 'Park'), and a rating out of 5. Your response must be a single JSON object with a key "places" that is an array of place objects. Each place object must have keys: "name", "description", "category", and "rating". Do not add any text before or after the JSON object.`;
+    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search. 
+    
+    For each place, provide:
+    1. "name"
+    2. "description" (brief and enticing)
+    3. "category" (like 'Restaurant', 'Cafe', 'Hotel', 'Park')
+    4. "rating" (number out of 5)
+    5. "priceLevel" (string: 'Low', 'Medium', or 'High' - if applicable)
+    6. "priceRange" (string: e.g., '$20 - $40' per person - if applicable)
+    7. "popularDishes" (array of strings: 2-3 popular items - if applicable)
+
+    Your response must be a single JSON object with a key "places" that is an array of place objects. Do not add any text before or after the JSON object.`;
 
     const config: any = {
         tools: [{ googleMaps: {} }],
