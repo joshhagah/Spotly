@@ -51,8 +51,6 @@ const AttractionIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="
 const EventIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const AdventureIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6H8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V6" /></svg>;
 const ShareIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>;
-const BookmarkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>;
-const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
 
 // --- Main App Component ---
 export default function App() {
@@ -72,6 +70,30 @@ export default function App() {
   // Chatbot state
   const [isChatOpen, setIsChatOpen] = useState(false);
   const chatRef = useRef<Chat | null>(null);
+
+  // Keyboard/Input Focus state
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  // Listen for focus events to determine if keyboard is likely open (mobile) or user is typing
+  useEffect(() => {
+    const handleFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        setIsInputFocused(true);
+      }
+    };
+    const handleBlur = () => {
+      setIsInputFocused(false);
+    };
+
+    window.addEventListener('focusin', handleFocus);
+    window.addEventListener('focusout', handleBlur);
+
+    return () => {
+      window.removeEventListener('focusin', handleFocus);
+      window.removeEventListener('focusout', handleBlur);
+    };
+  }, []);
 
   const toggleFavorite = (place: Place) => {
     setFavorites(prev =>
@@ -125,6 +147,9 @@ export default function App() {
     }
   };
 
+  // Determine if nav should be shown
+  const showNav = !isChatOpen && !isInputFocused;
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col font-sans">
       <Header />
@@ -139,7 +164,7 @@ export default function App() {
 
       <ChatBot isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} chatRef={chatRef} />
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-lg border-t border-t-cyan-400/20 flex justify-around p-2 shadow-t-xl z-50">
+      <nav className={`fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-lg border-t border-t-cyan-400/20 flex justify-around p-2 shadow-t-xl z-50 transition-transform duration-300 ${showNav ? 'translate-y-0' : 'translate-y-full'}`}>
         <NavButton icon={<CompassIcon />} label="Home" isActive={activeTab === 'home'} onClick={() => {setActiveTab('home'); setIsShowingResults(false);}} />
         <NavButton icon={<PlanIcon />} label="Pro Plan" isActive={activeTab === 'plan'} onClick={() => setActiveTab('plan')} />
       </nav>
@@ -177,14 +202,6 @@ const LoadingSpinner = () => (
   </div>
 );
 
-interface SavedSearch {
-    id: number;
-    query: string;
-    locationName: string;
-    coords: { lat: number, lon: number } | null;
-    category: string;
-}
-
 const HomePage: React.FC<{
   onDiscover: (query: string, location: { lat?: number; lon?: number; name?: string }) => void;
   places: Place[];
@@ -199,18 +216,6 @@ const HomePage: React.FC<{
   const [locationStatus, setLocationStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [manualLocation, setManualLocation] = useState('');
   const [coords, setCoords] = useState<{lat: number, lon: number} | null>(null);
-  const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('spotly_saved_searches');
-    if (saved) {
-        try {
-            setSavedSearches(JSON.parse(saved));
-        } catch (e) {
-            console.error("Error loading saved searches", e);
-        }
-    }
-  }, []);
 
   const handleGetLocation = () => {
     setLocationStatus('loading');
@@ -231,47 +236,6 @@ const HomePage: React.FC<{
       onDiscover(query, { lat: coords.lat, lon: coords.lon });
     }
   };
-
-  const handleSaveSearch = () => {
-      const query = customQuery.trim() || selectedCategory;
-      const locationName = manualLocation.trim() || (coords ? "Current Location" : "");
-      if (!locationName && !coords) return;
-
-      const newSearch: SavedSearch = {
-          id: Date.now(),
-          query,
-          locationName,
-          coords: manualLocation.trim() ? null : coords,
-          category: selectedCategory
-      };
-
-      const updated = [newSearch, ...savedSearches];
-      setSavedSearches(updated);
-      localStorage.setItem('spotly_saved_searches', JSON.stringify(updated));
-  };
-
-  const handleDeleteSearch = (e: React.MouseEvent, id: number) => {
-      e.stopPropagation();
-      const updated = savedSearches.filter(s => s.id !== id);
-      setSavedSearches(updated);
-      localStorage.setItem('spotly_saved_searches', JSON.stringify(updated));
-  }
-
-  const handleLoadSearch = (s: SavedSearch) => {
-      setSelectedCategory(s.category);
-      setCustomQuery(s.query === s.category ? '' : s.query);
-      if (s.coords) {
-          setCoords(s.coords);
-          setManualLocation('');
-          setLocationStatus('success');
-          onDiscover(s.query, { lat: s.coords.lat, lon: s.coords.lon });
-      } else {
-          setManualLocation(s.locationName);
-          setCoords(null);
-          setLocationStatus('idle'); // Just text
-          onDiscover(s.query, { name: s.locationName });
-      }
-  }
 
   const categories = [
     { name: 'Restaurants', icon: <RestaurantIcon /> },
@@ -340,43 +304,15 @@ const HomePage: React.FC<{
         </div>
 
         {/* Sticky Action Bar */}
-        <div className="sticky bottom-[5.5rem] bg-gray-800/90 backdrop-blur-md w-full -mx-6 px-6 py-4 z-20 border-t border-gray-700/50 rounded-xl shadow-[0_-10px_20px_rgba(0,0,0,0.5)] flex gap-3 justify-center items-center transition-all">
+        <div className="sticky bottom-[5.5rem] bg-gray-800/90 backdrop-blur-md w-full -mx-6 px-6 py-4 z-20 border-t border-gray-700/50 rounded-xl shadow-[0_-10px_20px_rgba(0,0,0,0.5)] flex justify-center items-center transition-all">
             <button 
                 onClick={handleSearch} 
                 disabled={locationStatus !== 'success' && !manualLocation.trim()}
-                className="flex-grow max-w-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full max-w-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
                 🔎 Find Places
             </button>
-            <button
-                onClick={handleSaveSearch}
-                disabled={locationStatus !== 'success' && !manualLocation.trim()}
-                className="bg-gray-700 hover:bg-gray-600 text-cyan-400 p-3 rounded-xl transition-colors border border-gray-600 disabled:opacity-50 shadow-lg"
-                title="Save This Search"
-            >
-                <BookmarkIcon />
-            </button>
         </div>
-
-        {/* Saved Searches List */}
-        {savedSearches.length > 0 && (
-            <div className="w-full mt-8 text-left">
-                <h3 className="text-xl font-bold text-gray-300 mb-4 flex items-center gap-2"><BookmarkIcon /> Saved Searches</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {savedSearches.map(s => (
-                        <div key={s.id} onClick={() => handleLoadSearch(s)} className="bg-gray-700/50 hover:bg-gray-700 border border-gray-600 p-3 rounded-lg cursor-pointer flex justify-between items-center group transition-all">
-                            <div className="overflow-hidden">
-                                <div className="font-semibold text-cyan-300 truncate">{s.query}</div>
-                                <div className="text-xs text-gray-400 truncate">{s.locationName}</div>
-                            </div>
-                            <button onClick={(e) => handleDeleteSearch(e, s.id)} className="text-gray-500 hover:text-red-400 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <TrashIcon />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )}
     </div>
   );
 };
