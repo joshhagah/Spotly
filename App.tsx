@@ -53,6 +53,8 @@ const AdventureIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h
 const HotelIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m8-10h2M7 21h10M9 9h1m0 4h1m0 4h1m-5-8h1m0 4h1m0 4h1" /></svg>;
 const ShareIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>;
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" /></svg>;
+const DiceIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 
 // --- Main App Component ---
 export default function App() {
@@ -263,6 +265,18 @@ const HomePage: React.FC<{
     }
   };
 
+  const handleSurpriseMe = () => {
+    const query = "Find a unique hidden gem or highly-rated local favorite that isn't a tourist trap.";
+    setCustomQuery(query); // Visual feedback
+    if (manualLocation.trim()) {
+        onDiscover(query, { name: manualLocation.trim() });
+    } else if (coords) {
+        onDiscover(query, { lat: coords.lat, lon: coords.lon });
+    } else {
+        alert("Please set your location first!");
+    }
+  };
+
   const categories = [
     { name: 'Restaurants', icon: <RestaurantIcon /> },
     { name: 'Clubs', icon: <ClubIcon /> },
@@ -271,6 +285,14 @@ const HomePage: React.FC<{
     { name: 'Events', icon: <EventIcon /> },
     { name: 'Adventures', icon: <AdventureIcon /> },
     { name: 'Hotels', icon: <HotelIcon /> },
+  ];
+
+  const moods = [
+      { label: 'Romantic ❤️', query: 'romantic places for dates' },
+      { label: 'Chill ☕', query: 'quiet and cozy places to relax' },
+      { label: 'Energetic ⚡', query: 'lively and high energy places' },
+      { label: 'Hidden Gem 💎', query: 'hidden gems and non-touristy spots' },
+      { label: 'Family 👨‍👩‍👧', query: 'family friendly fun places' },
   ];
 
   if (isShowingResults) {
@@ -309,18 +331,41 @@ const HomePage: React.FC<{
 
         <div className="w-full mb-8">
             <h2 className="text-2xl font-bold mb-4 text-white">🔍 What are you looking for today?</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            
+            {/* Mood/Vibe Selector */}
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {moods.map((mood) => (
+                    <button
+                        key={mood.label}
+                        onClick={() => setCustomQuery(mood.query)}
+                        className="bg-gray-700 hover:bg-cyan-900 border border-gray-600 hover:border-cyan-500 rounded-full px-4 py-1 text-sm transition-colors text-gray-200"
+                    >
+                        {mood.label}
+                    </button>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                 {categories.map(cat => (
                     <button 
                         key={cat.name} 
                         onClick={() => setSelectedCategory(cat.name)}
-                        className={`p-4 rounded-xl shadow-md transition-all duration-200 flex flex-col items-center justify-center gap-2 ${selectedCategory === cat.name ? 'bg-cyan-500 text-white ring-2 ring-cyan-300 scale-105' : 'bg-gray-800 hover:bg-gray-700'}`}
+                        className={`p-3 rounded-xl shadow-md transition-all duration-200 flex flex-col items-center justify-center gap-2 ${selectedCategory === cat.name ? 'bg-cyan-500 text-white ring-2 ring-cyan-300 scale-105' : 'bg-gray-800 hover:bg-gray-700'}`}
                     >
-                        {cat.icon}
-                        <span className="font-semibold">{cat.name}</span>
+                        <div className="scale-75">{cat.icon}</div>
+                        <span className="font-semibold text-sm">{cat.name}</span>
                     </button>
                 ))}
+                {/* Surprise Me Button inside Grid */}
+                <button 
+                    onClick={handleSurpriseMe}
+                    className="p-3 rounded-xl shadow-md transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white"
+                >
+                    <div className="scale-75"><DiceIcon /></div>
+                    <span className="font-semibold text-sm">Surprise Me!</span>
+                </button>
             </div>
+            
             <input 
                 type="text" 
                 value={customQuery}
@@ -351,19 +396,48 @@ const ResultsView: React.FC<{
   groundingChunks: GroundingChunk[];
   onNewSearch: () => void;
 }> = ({ places, favorites, toggleFavorite, groundingChunks, onNewSearch }) => {
+    const [filterOpenNow, setFilterOpenNow] = useState(false);
+    const [filterTopRated, setFilterTopRated] = useState(false);
+
+    const filteredPlaces = useMemo(() => {
+        return places.filter(place => {
+            if (filterOpenNow && place.isOpen === false) return false;
+            if (filterTopRated && place.rating < 4.5) return false;
+            return true;
+        });
+    }, [places, filterOpenNow, filterTopRated]);
+
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-cyan-400">Your Spots</h2>
-                <button onClick={onNewSearch} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                    New Search
-                </button>
+            <div className="flex flex-col gap-4 mb-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-cyan-400">Your Spots</h2>
+                    <button onClick={onNewSearch} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">
+                        New Search
+                    </button>
+                </div>
+
+                {/* Quick Filters */}
+                <div className="flex gap-2">
+                     <button 
+                        onClick={() => setFilterOpenNow(!filterOpenNow)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${filterOpenNow ? 'bg-green-600 border-green-500 text-white' : 'bg-gray-800 border-gray-600 text-gray-400 hover:border-gray-500'}`}
+                     >
+                        🕒 Open Now
+                     </button>
+                     <button 
+                        onClick={() => setFilterTopRated(!filterTopRated)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${filterTopRated ? 'bg-yellow-600 border-yellow-500 text-white' : 'bg-gray-800 border-gray-600 text-gray-400 hover:border-gray-500'}`}
+                     >
+                        ⭐ Top Rated (4.5+)
+                     </button>
+                </div>
             </div>
 
-            {places.length === 0 && <p className="text-center text-gray-400">No places found. Try a different search!</p>}
+            {filteredPlaces.length === 0 && <p className="text-center text-gray-400">No places found matching your criteria.</p>}
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {places.map(place => (
+                {filteredPlaces.map(place => (
                   <PlaceCard key={place.name} place={place} isFavorite={favorites.some(p => p.name === place.name)} onToggleFavorite={toggleFavorite} />
                 ))}
             </div>
@@ -439,16 +513,31 @@ const PlaceCard: React.FC<{ place: Place; isFavorite: boolean; onToggleFavorite:
   return (
     <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
       <div className="p-5 flex-grow">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="text-xl font-bold text-white leading-tight">{place.name}</h3>
+             <div className="flex items-center gap-2">
+                <h3 className="text-xl font-bold text-white leading-tight">{place.name}</h3>
+                {place.isOpen !== undefined && (
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${place.isOpen ? 'border-green-500 text-green-400 bg-green-500/10' : 'border-red-500 text-red-400 bg-red-500/10'}`}>
+                        {place.isOpen ? 'Open' : 'Closed'}
+                    </span>
+                )}
+             </div>
             <p className="text-sm text-cyan-400 mt-1">{place.category}</p>
           </div>
           <button onClick={() => onToggleFavorite(place)} className="p-1">
             <HeartIcon filled={isFavorite} />
           </button>
         </div>
-        <p className="text-gray-300 mt-3 text-sm line-clamp-3">{place.description}</p>
+
+        {place.openingHours && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-2">
+                <ClockIcon />
+                <span>{place.openingHours}</span>
+            </div>
+        )}
+
+        <p className="text-gray-300 mt-2 text-sm line-clamp-3">{place.description}</p>
         
         <div className="flex items-center mt-4">
           {[...Array(5)].map((_, i) => <StarIcon key={i} filled={i < place.rating} />)}

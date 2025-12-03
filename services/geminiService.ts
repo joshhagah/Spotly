@@ -21,7 +21,12 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
         throw new Error("Location information (either coordinates or a name) is required.");
     }
 
-    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search. 
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search.
+    
+    Current User Time: ${dayOfWeek}, ${currentTime}.
     
     For each place, provide:
     1. "name"
@@ -31,6 +36,8 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
     5. "priceLevel" (string: 'Low', 'Medium', or 'High' - if applicable)
     6. "priceRange" (string: e.g., '$20 - $40' per person - if applicable)
     7. "popularDishes" (array of strings: 2-3 popular items - if applicable)
+    8. "openingHours" (string: e.g., '9:00 AM - 10:00 PM' or '24 Hours')
+    9. "isOpen" (boolean: true if it is likely open right now based on the Current User Time provided, false otherwise)
 
     Your response must be a single JSON object with a key "places" that is an array of place objects. Do not add any text before or after the JSON object.`;
 
