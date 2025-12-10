@@ -120,16 +120,16 @@ const PlaceCard: React.FC<{ place: Place }> = ({ place }) => {
         )}
 
         {/* Menu & Price Info */}
-        {(place.priceLevel || place.priceRange) && (
+        {(place.priceLevel || place.priceRange || place.popularDishes) && (
           <div className="mb-3 text-sm">
              <div className="flex items-center gap-2 mb-1">
                 {place.priceLevel && <span className={`font-semibold ${getPriceColor(place.priceLevel)}`}>{place.priceLevel === 'Low' ? '$' : place.priceLevel === 'Medium' ? '$$' : '$$$'}</span>}
                 {place.priceRange && <span className="text-gray-400 text-xs">({place.priceRange})</span>}
              </div>
-             {place.popularDishes && place.popularDishes.length > 0 && (
+             {place.popularDishes && (
                <div className="text-xs text-gray-400">
                  <span className="text-gray-500 font-semibold">Popular: </span>
-                 {place.popularDishes.join(', ')}
+                 {Array.isArray(place.popularDishes) ? place.popularDishes.join(', ') : place.popularDishes}
                </div>
              )}
           </div>
