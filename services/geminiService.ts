@@ -3,7 +3,7 @@ import { Place, AspectRatio, GroundingChunk } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
-export const getPlaceRecommendations = async (query: string, location: { lat?: number; lon?: number; name?: string }): Promise<{ places: Place[], groundingChunks: GroundingChunk[] }> => {
+export const getPlaceRecommendations = async (query: string, location: { lat?: number; lon?: number; name?: string }, excludeNames: string[] = []): Promise<{ places: Place[], groundingChunks: GroundingChunk[] }> => {
   try {
     let locationString: string;
     let toolConfig: any = undefined;
@@ -24,7 +24,7 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
     const currentTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
-    const prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search.
+    let prompt = `Find cool and interesting places ${locationString}. I'm looking for "${query}". Suggest a mix of places that fit this search.
     
     Current User Time: ${dayOfWeek}, ${currentTime}.
     
@@ -43,6 +43,10 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
 
     Your response must be a single JSON object with a key "places" that is an array of place objects. Do not add any text before or after the JSON object.`;
 
+    if (excludeNames.length > 0) {
+        prompt += `\n\nIMPORTANT: Do NOT include any of the following places in your suggestions: ${excludeNames.join(', ')}. Find DIFFERENT places.`;
+    }
+
     const config: any = {
         tools: [{ googleMaps: {} }],
     };
@@ -57,7 +61,8 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
       config: config,
     });
 
-    const groundingChunks: GroundingChunk[] = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    // Fix: Type casting to handle mismatch between SDK GroundingChunk and local GroundingChunk definition
+    const groundingChunks: GroundingChunk[] = (response.candidates?.[0]?.groundingMetadata?.groundingChunks as unknown as GroundingChunk[]) || [];
     
     let jsonStr = response.text.trim();
     const jsonMatch = jsonStr.match(/```(json)?\n?([\s\S]*?)\n?```/);

@@ -77,13 +77,9 @@ const PlaceCard: React.FC<{ place: Place }> = ({ place }) => {
     <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 flex flex-col h-full">
       <div className="h-40 bg-gray-700 relative">
         <img
-          src={place.uri ? `https://www.google.com/s2/favicons?domain=${new URL(place.uri).hostname}&sz=256` : `https://placehold.co/600x400/374151/FFFFFF?text=${encodeURIComponent(place.name)}`}
+          src={`https://placehold.co/600x400/374151/FFFFFF?text=${encodeURIComponent(place.name)}`}
           alt={place.name}
           className="w-full h-full object-cover"
-          onError={(e) => {
-             // Fallback if favicon fails or placehold.co fails
-             (e.target as HTMLImageElement).src = `https://placehold.co/600x400/374151/FFFFFF?text=${encodeURIComponent(place.name)}`
-          }}
         />
         <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-xs text-white font-bold backdrop-blur-sm">
           ⭐ {place.rating}
@@ -330,11 +326,15 @@ const HomePage = ({
 const ResultsView = ({ 
     places, 
     onBack, 
-    groundingChunks 
+    groundingChunks,
+    onLoadMore,
+    loadingMore
 }: { 
     places: Place[], 
     onBack: () => void, 
-    groundingChunks: GroundingChunk[] 
+    groundingChunks: GroundingChunk[],
+    onLoadMore: () => void,
+    loadingMore: boolean
 }) => {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -437,23 +437,44 @@ const ResultsView = ({
 
             {/* Pagination Controls */}
             {filteredPlaces.length > 0 && (
-                <div className="flex justify-center items-center gap-4 mt-8">
+                <div className="flex flex-col gap-4 mt-8">
+                     <div className="flex justify-center items-center gap-4">
+                        <button
+                            onClick={handlePrevPage}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-gray-800 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-sm text-gray-400">
+                            Page <span className="text-white font-bold">{currentPage}</span> of {totalPages}
+                        </span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-gray-800 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+                        >
+                            Next
+                        </button>
+                    </div>
+                    
+                    {/* Search More Button */}
                     <button
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 bg-gray-800 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+                        onClick={onLoadMore}
+                        disabled={loadingMore}
+                        className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white py-3 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                        Previous
-                    </button>
-                    <span className="text-sm text-gray-400">
-                        Page <span className="text-white font-bold">{currentPage}</span> of {totalPages}
-                    </span>
-                    <button
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 bg-gray-800 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
-                    >
-                        Next
+                        {loadingMore ? (
+                            <>
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                Finding More Places...
+                            </>
+                        ) : (
+                            <>
+                                <SearchIcon />
+                                Search More Places
+                            </>
+                        )}
                     </button>
                 </div>
             )}
@@ -550,9 +571,11 @@ const ChatOverlay = ({ onClose }: { onClose: () => void }) => {
     setLoading(true);
 
     try {
-      const result = await chatRef.current.sendMessage(userMsg.text);
-      const modelResponse = result.response.text; // Fixed: result.response.text is a property, not a method
-      setMessages(prev => [...prev, { role: 'model', text: modelResponse }]);
+      // FIX: sendMessage accepts an object with a 'message' property, not a string directly.
+      const result = await chatRef.current.sendMessage({ message: userMsg.text });
+      // FIX: The response text is available directly on the result object as 'text', not 'result.response.text'.
+      const modelResponse = result.text;
+      setMessages(prev => [...prev, { role: 'model', text: modelResponse || '' }]);
       
       // Attempt to read short responses
       if (modelResponse && modelResponse.length < 200) {
@@ -633,6 +656,8 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<{ lat?: number; lon?: number; name?: string }>({});
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState('');
+  const [loadingMore, setLoadingMore] = useState(false);
   
   // State to track if inputs are focused to hide nav
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -690,6 +715,7 @@ const App = () => {
     }
 
     setLoading(true);
+    setCurrentQuery(query);
     try {
       const { places: fetchedPlaces, groundingChunks: fetchedChunks } = await geminiService.getPlaceRecommendations(query, location);
       setPlaces(fetchedPlaces);
@@ -700,6 +726,25 @@ const App = () => {
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (!currentQuery) return;
+    setLoadingMore(true);
+    try {
+      // Create a list of names to exclude to avoid duplicates
+      const excludeNames = places.map(p => p.name);
+      const { places: newPlaces, groundingChunks: newChunks } = await geminiService.getPlaceRecommendations(currentQuery, location, excludeNames);
+      
+      // Append new unique places
+      setPlaces(prev => [...prev, ...newPlaces]);
+      setGroundingChunks(prev => [...prev, ...newChunks]);
+    } catch (e) {
+       console.error(e);
+       alert("Could not load more places.");
+    } finally {
+       setLoadingMore(false);
     }
   };
 
@@ -721,6 +766,8 @@ const App = () => {
             places={places} 
             onBack={() => setView('home')} 
             groundingChunks={groundingChunks}
+            onLoadMore={handleLoadMore}
+            loadingMore={loadingMore}
           />
         )}
         {view === 'pro' && <ProPlanView />}
