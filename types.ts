@@ -10,6 +10,8 @@ export interface Place {
   popularDishes?: string[];
   openingHours?: string;
   isOpen?: boolean;
+  distance?: string;
+  travelTime?: string;
 }
 
 export type AspectRatio = "1:1" | "16:9" | "9:16" | "4:3" | "3:4";

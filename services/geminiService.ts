@@ -38,6 +38,8 @@ export const getPlaceRecommendations = async (query: string, location: { lat?: n
     7. "popularDishes" (array of strings: 2-3 popular items - if applicable)
     8. "openingHours" (string: e.g., '9:00 AM - 10:00 PM' or '24 Hours')
     9. "isOpen" (boolean: true if it is likely open right now based on the Current User Time provided, false otherwise)
+    10. "distance" (string: estimated distance from the provided user location e.g., '2.5 km' or '0.5 miles')
+    11. "travelTime" (string: estimated travel time e.g., '10 min drive' or '5 min walk')
 
     Your response must be a single JSON object with a key "places" that is an array of place objects. Do not add any text before or after the JSON object.`;
 
@@ -85,7 +87,7 @@ export const createProItinerary = async (places: Place[]): Promise<string> => {
     const prompt = `I want to visit these places: ${placeNames}. Create a detailed, smart, and enjoyable full-day itinerary. Consider travel time between places, best times to visit, and suggest a logical order. Make it sound like a pro travel guide.`;
     
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-3-pro-preview",
         contents: prompt,
         config: {
             thinkingConfig: { thinkingBudget: 32768 }
